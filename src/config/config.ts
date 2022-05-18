@@ -25,6 +25,9 @@ const config = {
       dynamicTimeout: 15 * 1000, // 15 seconds
     }
   },
+  cron: {
+    interval: 5, // 5 minutes
+  },
   users: (JSON.parse(process.env.USER_ACCOUNTS!) as unknown) as IUser[],
 };
 

@@ -10,10 +10,8 @@ const staticElemOptions = { timeout: config.platform.selector.dynamicTimeout }
 const dynamicElemOptions = { visible: true, timeout: config.platform.selector.dynamicTimeout };
 
 const orderInterval = 20 * 1000; // 20 seconds
-const cronJobInterval = 5; // 5 minutes
 const minTotalAssets = 5;
 const minWalletBal = 5;
-const nextTranxTime = moment().add(cronJobInterval, 'minutes').format('hh:mm A');
 
 const selectors = pageSelectors.tranx;
 
@@ -65,6 +63,8 @@ export const runOrderCycle = async (page: Page, user: IUser) => {
 
 const canRunTransaction = async (page: Page, user: IUser) => {
   try {
+    const nextTranxTime = moment().add(config.cron.interval, 'minutes').format('hh:mm A');
+
     // check if user is logged in
     const loggedIn = await isLoggedIn(page, user);
     if (!loggedIn) {
@@ -88,7 +88,6 @@ const canRunTransaction = async (page: Page, user: IUser) => {
     const totalAssets = parseInt(await page.$eval(selectors.totalAssetsText, el => el.textContent) || '');
     if (totalAssets < minTotalAssets) {
       console.log(`NOTICE: ${user.displayName}: Insufficient total assets! Awaiting next transaction cycle at ${nextTranxTime}!`);
-      clearInterval(orderTimer);
       endOrderCycle(user);
       return false;
     }
