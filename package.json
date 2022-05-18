@@ -1,0 +1,28 @@
+{
+  "name": "crypto-auto-trader",
+  "version": "1.0.0",
+  "description": "Crypto auto trader",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=dev && nodemon --exec ts-node src/index.ts",
+    "check": "npx tsc --traceResolution",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Crypto",
+    "auto-trading",
+    "bot"
+  ],
+  "author": "Ikemefuna Nwankwo",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "moment": "^2.29.3",
+    "puppeteer": "^14.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.16",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
+}
