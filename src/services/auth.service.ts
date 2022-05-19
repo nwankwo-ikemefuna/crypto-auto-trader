@@ -32,7 +32,7 @@ export const login = async (page: Page, user: IUser) => {
     await page.waitForSelector(selectors.usernameInput);
     await page.waitForSelector(selectors.passwordInput);
     await page.type(selectors.usernameInput, user.username, elemEventOptions);
-    await page.type(selectors.passwordInput, user.password, elemEventOptions);
+    await page.type(selectors.passwordInput, user.password!, elemEventOptions);
 
     // click login button
     console.log(`${user.displayName}: Logging in...`);

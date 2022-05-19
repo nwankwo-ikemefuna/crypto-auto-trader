@@ -14,7 +14,7 @@ const init = async () => {
     // get active users
     const activeUsers = await getActiveUsers();
     if (!activeUsers.length) {
-      throw new Error('No user accounts found!');
+      throw new Error('No active user accounts found!');
     }
 
     const browserOptions: BrowserLaunchArgumentOptions & LaunchOptions = { 
@@ -48,7 +48,3 @@ console.log(`Job scheduled to start by ${nextJobTime}!`);
 cron.schedule("*/5 * * * *", async () => {
   await init();
 });
-
-/*(async () => {
-  await init();
-})();*/
