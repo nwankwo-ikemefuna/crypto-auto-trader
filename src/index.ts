@@ -1,15 +1,20 @@
 require('dotenv').config();
 import moment from 'moment';
 import cron from 'node-cron';
-
 import puppeteer, { BrowserLaunchArgumentOptions, LaunchOptions } from 'puppeteer';
 import config from './config/config';
 import { login } from './services/auth.service';
 import { runTransaction } from './services/transaction.service';
+import { IUser } from './types/user.type';
+
+// TODO: @ikemefuna implement in db and use fetch/axios api
+import users from './private/users.json';
 
 const init = async () => {
   try {
-    const activeUsers = config.users.filter(({ isActive }) => isActive === 1) || [];
+
+    // get active users
+    const activeUsers = (users as IUser[]).filter(({ isActive }) => isActive) || [];
     if (!activeUsers.length) {
       throw new Error('No user accounts found!');
     }
@@ -32,7 +37,7 @@ const init = async () => {
       await runTransaction(page, user);
     }));
 
-    await browser.close();
+    //await browser.close();
 
   } catch(err) {
     const error = err as Error;

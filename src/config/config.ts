@@ -1,5 +1,4 @@
 import { TwaitUntil } from "../types/browser.type";
-import { IUser } from "../types/user.type";
 
 require('dotenv').config();
 
@@ -28,7 +27,6 @@ const config = {
   cron: {
     interval: 5, // 5 minutes
   },
-  users: (JSON.parse(process.env.USER_ACCOUNTS!) as unknown) as IUser[],
 };
 
 export default config;
