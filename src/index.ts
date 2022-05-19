@@ -5,16 +5,14 @@ import puppeteer, { BrowserLaunchArgumentOptions, LaunchOptions } from 'puppetee
 import config from './config/config';
 import { login } from './services/auth.service';
 import { runTransaction } from './services/transaction.service';
-import { IUser } from './types/user.type';
-
-// TODO: @ikemefuna implement in db and use fetch/axios api
-import users from './private/users.json';
+import { getActiveUsers } from './services/user.service';
+import { throwException } from './utils/error.util';
 
 const init = async () => {
   try {
 
     // get active users
-    const activeUsers = (users as IUser[]).filter(({ isActive }) => isActive) || [];
+    const activeUsers = await getActiveUsers();
     if (!activeUsers.length) {
       throw new Error('No user accounts found!');
     }
@@ -40,8 +38,7 @@ const init = async () => {
     //await browser.close();
 
   } catch(err) {
-    const error = err as Error;
-    console.log(error.message);
+    throwException(err);
   }
 };
 
@@ -51,3 +48,7 @@ console.log(`Job scheduled to start by ${nextJobTime}!`);
 cron.schedule("*/5 * * * *", async () => {
   await init();
 });
+
+/*(async () => {
+  await init();
+})();*/

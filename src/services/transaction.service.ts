@@ -3,6 +3,7 @@ import { Page } from "puppeteer";
 import config from "../config/config";
 import { pageSelectors } from "../constants/selectors.constant";
 import { IUser } from "../types/user.type";
+import { throwException } from "../utils/error.util";
 import { isLoggedIn } from "./auth.service";
 
 const elemEventOptions = { delay: config.platform.selector.delay };
@@ -56,8 +57,7 @@ export const runOrderCycle = async (page: Page, user: IUser) => {
     console.log(`NOTICE: ${user.displayName}: Order cycle completed successfully!`);
     
   } catch(err) {
-    const error = err as Error;
-    console.log(`ERR: ${user.displayName}: `, error.message);
+    return throwException(err);
   }
 };
 
@@ -111,9 +111,6 @@ const canRunTransaction = async (page: Page, user: IUser) => {
 
     return true;
   } catch(err) {
-    const error = err as Error;
-    console.log(`ERR: ${user.displayName}: `, error.message);
-    endOrderCycle(user);
-    return false;
+    return throwException(err);
   }
 };

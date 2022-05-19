@@ -2,6 +2,7 @@ import { Page } from "puppeteer";
 import config from "../config/config";
 import { pageSelectors } from "../constants/selectors.constant";
 import { IUser } from "../types/user.type";
+import { throwException } from "../utils/error.util";
 
 const selectors = pageSelectors.auth;
 
@@ -49,9 +50,7 @@ export const login = async (page: Page, user: IUser) => {
     }
     return false;
   } catch(err) {
-    const error = err as Error;
-    console.log(`ERR: ${user.displayName}: `, error.message);
-    return false;
+    return throwException(err);
   }
 };
 
@@ -67,8 +66,6 @@ export const isLoggedIn = async (page: Page, user: IUser) => {
     }
     return true;
   } catch(err) {
-    const error = err as Error;
-    console.log(`ERR: ${user.displayName}: `, error.message);
-    return false;
+    return throwException(err);
   }
 };
