@@ -14,7 +14,10 @@ const init = async () => {
       throw new Error('No user accounts found!');
     }
 
-    const browserOptions: BrowserLaunchArgumentOptions & LaunchOptions = { headless: config.browser.headless };
+    const browserOptions: BrowserLaunchArgumentOptions & LaunchOptions = { 
+      headless: config.browser.headless,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    };
     if (!config.browser.headless && config.browser.executablePath) {
       browserOptions.executablePath = config.browser.executablePath;
     }
