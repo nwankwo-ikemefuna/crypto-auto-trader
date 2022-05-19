@@ -2,7 +2,7 @@ require('dotenv').config();
 import moment from 'moment';
 import cron from 'node-cron';
 
-import puppeteer from 'puppeteer';
+import puppeteer, { BrowserLaunchArgumentOptions, LaunchOptions } from 'puppeteer';
 import config from './config/config';
 import { login } from './services/auth.service';
 import { runTransaction } from './services/transaction.service';
@@ -14,10 +14,11 @@ const init = async () => {
       throw new Error('No user accounts found!');
     }
 
-    const browser = await puppeteer.launch({
-      headless: config.browser.headless,
-      executablePath: config.browser.executablePath,
-    });
+    const browserOptions: BrowserLaunchArgumentOptions & LaunchOptions = { headless: config.browser.headless };
+    if (!config.browser.headless && config.browser.executablePath) {
+      browserOptions.executablePath = config.browser.executablePath;
+    }
+    const browser = await puppeteer.launch(browserOptions);
 
     await Promise.all(activeUsers.map(async user => {
       const incognitoWindowContext = await browser.createIncognitoBrowserContext();
@@ -26,10 +27,9 @@ const init = async () => {
 
       await login(page, user);
       await runTransaction(page, user);
-      // incognitoWindowContext.close();
     }));
 
-    //await browser.close();
+    await browser.close();
 
   } catch(err) {
     const error = err as Error;
