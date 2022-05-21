@@ -88,7 +88,7 @@ const canRunTransaction = async (context: BrowserContext, page: Page, user: IUse
 
     // check sufficient total assets
     const totalAssets = parseInt(await page.$eval(selectors.totalAssetsText, el => el.textContent) || '');
-    if (totalAssets > minTotalAssets) {
+    if (totalAssets < minTotalAssets) {
       console.log(`NOTICE: ${user.displayName}: Insufficient total assets! Awaiting next transaction cycle at ${nextTranxTime}!`);
       endOrderCycle(context, page, user, 'Insufficient assets');
       return false;
