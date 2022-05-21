@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Crypto auto trader",
   "scripts": {
-    "dev": "cross-env NODE_ENV=dev && nodemon --exec ts-node src/index.ts",
+    "dev": "cross-env NODE_ENV=dev && nodemon --watch .env --watch src --exec ts-node src/index.ts",
+    "sandbox": "cross-env NODE_ENV=dev && nodemon --watch .env --watch src --exec ts-node src/sandbox.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "tsc --traceResolution",
     "type-check": "tsc --noEmit",

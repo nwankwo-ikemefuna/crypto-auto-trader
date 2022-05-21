@@ -1,4 +1,4 @@
-import { TwaitUntil } from "../types/browser.type";
+import { TWaitUntil } from "../types/browser.type";
 
 require('dotenv').config();
 
@@ -16,7 +16,7 @@ const config = {
     loginPage: 'https://cotps.com/#/pages/login/login?originSource=userCenter',
     navigation: {
       timeout: 30 * 1000, // 30 seconds
-      waitUntil: 'domcontentloaded' as TwaitUntil,
+      waitUntil: 'domcontentloaded' as TWaitUntil,
     },
     selector: {
       delay: 150, // 150 milliseconds

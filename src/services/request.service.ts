@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { IAxiosReqConfig } from "../types/request.type";
-import { throwException } from "../utils/error.util";
 
 export const makeRequest = async<R>(requestConfig: IAxiosReqConfig): Promise<AxiosResponse<R>> => {
   try {
@@ -13,6 +12,6 @@ export const makeRequest = async<R>(requestConfig: IAxiosReqConfig): Promise<Axi
     console.log('res', res);
     return res;
   } catch (err) {
-    return throwException(err);
+    throw new Error((err as Error).message);
   }
 };

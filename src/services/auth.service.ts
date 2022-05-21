@@ -1,12 +1,13 @@
-import { Page } from "puppeteer";
+import { BrowserContext, Page } from "puppeteer";
 import config from "../config/config";
 import { pageSelectors } from "../constants/selectors.constant";
 import { IUser } from "../types/user.type";
-import { throwException } from "../utils/error.util";
+import { throwBrowserContextException } from "../helpers/error.helper";
+import { closeBrowserContext } from "../helpers/browser.helper";
 
 const selectors = pageSelectors.auth;
 
-export const login = async (page: Page, user: IUser) => {
+export const login = async (context: BrowserContext, page: Page, user: IUser) => {
   try {
 
     const elemEventOptions = { delay: config.platform.selector.delay };
@@ -36,25 +37,27 @@ export const login = async (page: Page, user: IUser) => {
 
     // click login button
     console.log(`${user.displayName}: Logging in...`);
-    await page.waitForSelector(selectors.loginBtn);
-    await page.click(selectors.loginBtn, elemEventOptions);
-    // wait for navigation to dashboard
-    await page.waitForNavigation({ timeout: config.platform.navigation.timeout });
+    await Promise.all([
+      page.waitForSelector(selectors.loginBtn),
+      page.click(selectors.loginBtn, elemEventOptions),
+      // wait for navigation to dashboard
+      page.waitForNavigation({ timeout: config.platform.navigation.timeout })
+    ]);
 
     // verify login
     console.log(`${user.displayName}: Verifying login...`);
-    const loggedIn = await isLoggedIn(page, user);
+    const loggedIn = await isLoggedIn(context, page, user);
     if (loggedIn) {
       console.log(`${user.displayName}: Login succeeded!`);
       return true;
     }
     return false;
   } catch(err) {
-    return throwException(err);
+    return throwBrowserContextException(err, context, page, user);
   }
 };
 
-export const isLoggedIn = async (page: Page, user: IUser) => {
+export const isLoggedIn = async (context: BrowserContext, page: Page, user: IUser) => {
   try {
     const [isLoggedin, accessToken] = await Promise.all([
       page.evaluate(() => localStorage.getItem('IS_LOGIN')),
@@ -62,10 +65,12 @@ export const isLoggedIn = async (page: Page, user: IUser) => {
     ]);
 
     if (!accessToken || isLoggedin !== 'Y') {
-      throw new Error(`${user.displayName}: Unable to login! Please check your credentials.`);
+      console.log(`${user.displayName}: Unable to login! Please check credentials.`);
+      closeBrowserContext(context, page, user, 'Unable to login!');
+      return false;
     }
     return true;
   } catch(err) {
-    return throwException(err);
+    return throwBrowserContextException(err, context, page, user);
   }
 };

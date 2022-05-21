@@ -1,10 +1,11 @@
 import { IUser } from "../types/user.type";
-import { throwException } from "../utils/error.util";
+import { throwBrowserException } from "../helpers/error.helper";
 import users from '../../public/users.json';
+import { Browser } from "puppeteer";
 
-export const getActiveUsers = async () => {
+export const getActiveUsers = async (browser: Browser) => {
   try {
-    const validUsers = appendPasswords((users as unknown) as IUser[]);
+    const validUsers = appendPasswords(browser, (users as unknown) as IUser[]);
 
     // get active users
     const activeUsers = validUsers.filter(({ isActive, password, subDays, lastSubAt }) =>
@@ -12,12 +13,12 @@ export const getActiveUsers = async () => {
 
     return activeUsers;
   } catch(err) {
-    return throwException(err);
+    return throwBrowserException(err, browser);
   }
 }
 
 // TODO: deprecate when moved to database with backend api
-const appendPasswords = (usersArr: IUser[]) => {
+const appendPasswords = (browser: Browser, usersArr: IUser[]) => {
   try {
     const passwords = JSON.parse(process.env.USER_PASSWORDS || '');
     return usersArr.map(user => {
@@ -25,12 +26,13 @@ const appendPasswords = (usersArr: IUser[]) => {
       return user;
     });
   } catch(err) {
-    return throwException(err);
+    return throwBrowserException(err, browser);
   }
 }
 
 const isActiveSub = (subDays: number, lastSubAt: string) => {
   const subDate = new Date(lastSubAt);
+  // add 1 day to sub date
   const expireTime = subDate.setDate(subDate.getDate() + (subDays + 1));
   const now = new Date();
   return expireTime > now.getTime();
