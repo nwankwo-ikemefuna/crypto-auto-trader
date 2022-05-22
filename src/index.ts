@@ -51,20 +51,9 @@ const init = async () => {
   } 
 };
 
-const startTask = () => {
-  const useCron = process.env.USE_CRON === 'true' || false;
-  if (useCron) {
-    const nextJobTime = moment().add(config.cron.interval, 'minutes').format('hh:mm A');
-    console.log(`Job scheduled to start by ${nextJobTime}!`);
+const nextJobTime = moment().add(config.cron.interval, 'minutes').format('hh:mm A');
+console.log(`Job scheduled to start by ${nextJobTime}!`);
 
-    cron.schedule(`*/${config.cron.interval} * * * *`, async () => {
-      await init();
-    });
-  } else {
-    (async () => {
-      await init();
-    })();
-  }
-}
-
-startTask();
+cron.schedule(`*/${config.cron.interval} * * * *`, async () => {
+  await init();
+});

@@ -25,7 +25,7 @@ const config = {
     }
   },
   cron: {
-    interval: 5, // 5 minutes
+    interval: process.env.CRON_INTERVAL_MINUTES,
   },
 };
 
