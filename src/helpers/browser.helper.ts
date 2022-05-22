@@ -8,10 +8,9 @@ export const closeBrowser = (browser: Browser, reason: string, afterInSecs = 3) 
   }, afterInSecs * 1000);
 }
 
-export const closeBrowserContext = (context: BrowserContext, page: Page, user: IUser, reason: string, afterInSecs = 3) => {
+export const closeBrowserContext = (context: BrowserContext, user: IUser, reason: string, afterInSecs = 3) => {
   console.log(`>>>END: ${user.displayName}: ${reason}... Closing page and browser context in ${afterInSecs} seconds...`);
   setTimeout(async () => {
-    await page.close();
     await context.close();
   }, afterInSecs * 1000);
 }

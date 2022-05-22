@@ -53,7 +53,7 @@ export const login = async (context: BrowserContext, page: Page, user: IUser) =>
     }
     return false;
   } catch(err) {
-    return throwBrowserContextException(err, context, page, user);
+    return throwBrowserContextException(err, context, user);
   }
 };
 
@@ -66,11 +66,11 @@ export const isLoggedIn = async (context: BrowserContext, page: Page, user: IUse
 
     if (!accessToken || isLoggedin !== 'Y') {
       console.log(`${user.displayName}: Unable to login! Please check credentials.`);
-      closeBrowserContext(context, page, user, 'Unable to login!');
+      closeBrowserContext(context, user, 'Unable to login!');
       return false;
     }
     return true;
   } catch(err) {
-    return throwBrowserContextException(err, context, page, user);
+    return throwBrowserContextException(err, context, user);
   }
 };

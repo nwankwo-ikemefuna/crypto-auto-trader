@@ -27,11 +27,12 @@ export const runTransaction = async (context: BrowserContext, page: Page, user: 
   // start transaction cycle
   console.log(`NOTICE: ${user.displayName}: Starting new transaction cycle in ${orderInterval / 1000} seconds...`);
   orderTimer = setInterval(async () => await runOrderCycle(context, page, user), orderInterval);
+  return orderTimer;
 };
 
-const endOrderCycle = (context: BrowserContext, page: Page, user: IUser, reason: string) => {
+const endOrderCycle = (context: BrowserContext, user: IUser, reason: string) => {
   clearInterval(orderTimer);
-  closeBrowserContext(context, page, user, reason);
+  closeBrowserContext(context, user, reason);
   console.log(`NOTICE: ${user.displayName}: Order cycle ended/aborted...`);
 };
 
@@ -59,7 +60,7 @@ export const runOrderCycle = async (context: BrowserContext, page: Page, user: I
     console.log(`NOTICE: ${user.displayName}: Order cycle completed successfully!`);
     
   } catch(err) {
-    return throwBrowserContextException(err, context, page, user);
+    return throwBrowserContextException(err, context, user);
   }
 };
 
@@ -71,7 +72,7 @@ const canRunTransaction = async (context: BrowserContext, page: Page, user: IUse
     const loggedIn = await isLoggedIn(context, page, user);
     if (!loggedIn) {
       console.log(`NOTICE: ${user.displayName}: Not loggedin!`);
-      endOrderCycle(context, page, user, 'Not loggedin!');
+      endOrderCycle(context, user, 'Not loggedin!');
       return false;
     }
 
@@ -82,7 +83,7 @@ const canRunTransaction = async (context: BrowserContext, page: Page, user: IUse
       page.waitForSelector(selectors.orderBtn, staticElemOptions),
     ]);
     if (!inPositionPromise) {
-      endOrderCycle(context, page, user, 'Not in position');
+      endOrderCycle(context, user, 'Not in position');
       return false;
     }
 
@@ -90,7 +91,7 @@ const canRunTransaction = async (context: BrowserContext, page: Page, user: IUse
     const totalAssets = parseInt(await page.$eval(selectors.totalAssetsText, el => el.textContent) || '');
     if (totalAssets < minTotalAssets) {
       console.log(`NOTICE: ${user.displayName}: Insufficient total assets! Awaiting next transaction cycle at ${nextTranxTime}!`);
-      endOrderCycle(context, page, user, 'Insufficient assets');
+      endOrderCycle(context, user, 'Insufficient assets');
       return false;
     }
 
@@ -99,7 +100,7 @@ const canRunTransaction = async (context: BrowserContext, page: Page, user: IUse
     const orderCycleInProgress = (totalAssets - tranxBal) > minWalletBal;
     if (!orderCycleInProgress && tranxBal > 0) {
       console.log(`NOTICE: ${user.displayName}: Transactions have not fully returned to wallet! Awaiting next transaction cycle at ${nextTranxTime}!`);
-      endOrderCycle(context, page, user, 'Transactions not fully returned');
+      endOrderCycle(context, user, 'Transactions not fully returned');
       return false;
     }
 
@@ -107,12 +108,12 @@ const canRunTransaction = async (context: BrowserContext, page: Page, user: IUse
     const walletBal = parseInt(await page.$eval(selectors.walletBalText, el => el.textContent) || '');
     if (walletBal < minWalletBal) {
       console.log(`NOTICE: ${user.displayName}: Insufficient wallet balance! Awaiting next transaction cycle at ${nextTranxTime}!`);
-      endOrderCycle(context, page, user, 'Insufficient wallet balance');
+      endOrderCycle(context, user, 'Insufficient wallet balance');
       return false;
     }
 
     return true;
   } catch(err) {
-    return throwBrowserContextException(err, context, page, user);
+    return throwBrowserContextException(err, context, user);
   }
 };
